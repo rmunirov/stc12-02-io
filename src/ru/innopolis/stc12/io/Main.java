@@ -2,7 +2,13 @@ package ru.innopolis.stc12.io;
 
 public class Main {
     public static void main(String[] args) {
-        EmployeeList employeeList = new EmployeeList();
+        ioTest();
+    }
+
+    private static void ioTest() {
+        //EmployeeList employeeList = new EmployeeList();   // TODO will need extends for common parent class, because duplicates code
+        MyCustomEmployeeList employeeList = new MyCustomEmployeeList();
+
         Employee employee1 = new Employee("Tom", 35, 35050.5, Job.Administrator);
         Employee employee2 = new Employee("Alex", 25, 45050.5, Job.Economist);
         Employee employee3 = new Employee("Monica", 27, 25050.5, Job.Economist);
@@ -31,6 +37,10 @@ public class Main {
         System.out.println(employeeList.changeAllWork(Job.Economist, Job.Programmer));
         System.out.println(employeeList.getByJob(Job.Programmer));
 
+        employee5.setSalary(236045.6);
+        System.out.println(employeeList.saveOrUpdate(employee5));
 
+        System.out.println(employeeList);
     }
+
 }
