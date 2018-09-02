@@ -4,40 +4,36 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeList {
+@UseXml
+public class EmployeeList implements MySerialization {
 
-    //private List<Employee> employeeList = new ArrayList();
-    private EmployeeListWrapper employeeList = new EmployeeListWrapper(new ArrayList<>());
+    private List<Employee> employeeList;
+    private EmployeeListWrapper employeeListWrapper;
 
     private final String FILE_NAME = "employees.txt";
 
-    private boolean readFromFile() {
+    public EmployeeList() {
+        employeeList = new ArrayList<>();
+        employeeListWrapper = new EmployeeListWrapper(employeeList);
+        readFromFile();
+    }
+
+    public boolean readFromFile() {
         boolean result = false;
 
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
-            employeeList = (EmployeeListWrapper) objectInputStream.readObject();
+            employeeListWrapper = (EmployeeListWrapper) objectInputStream.readObject();
             result = true;
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.getMessage());
         }
         return result;
     }
 
-
-    public EmployeeList() {
-        init();
-    }
-
-    private void init() {
-        readFromFile();
-    }
-
-    private boolean saveToFile() {
+    public boolean saveToFile() {
         boolean result = false;
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
-            objectOutputStream.writeObject(employeeList);
+            objectOutputStream.writeObject(employeeListWrapper);
             result = true;
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -47,7 +43,7 @@ public class EmployeeList {
 
     public boolean delete(Employee employee) {
         boolean result;
-        result = employeeList.getEmployeeList().remove(employee); // TODO maybe need set when file is saving
+        result = employeeList.remove(employee); // TODO maybe need set when file is saving
 
         saveToFile();
 
@@ -62,7 +58,7 @@ public class EmployeeList {
         if (name == null) return null; // TODO what better, returned value or execute exception?
 
         Employee result = null;
-        for (Employee employee : employeeList.getEmployeeList()) {
+        for (Employee employee : employeeList) {
             if (employee.getName().compareTo(name) == 0) {
                 result = employee;
                 break;
@@ -76,7 +72,7 @@ public class EmployeeList {
         if (job == null) return new ArrayList<>();
 
         List<Employee> result = new ArrayList<>();
-        for (Employee employee : employeeList.getEmployeeList()) {
+        for (Employee employee : employeeList) {
             if (employee.getJob().compareTo(job) == 0) {
                 result.add(employee);
             }
@@ -97,10 +93,10 @@ public class EmployeeList {
         Employee foundedEmployee = getByName(employee.getName());
 
         if (foundedEmployee != null && employee.getName().compareTo(foundedEmployee.getName()) == 0) {
-            int index = employeeList.getEmployeeList().indexOf(foundedEmployee);
-            employeeList.getEmployeeList().set(index, employee);
+            int index = employeeList.indexOf(foundedEmployee);
+            employeeList.set(index, employee);
         } else {
-            employeeList.getEmployeeList().add(employee);
+            employeeList.add(employee);
         }
 
         result = saveToFile();
@@ -113,7 +109,7 @@ public class EmployeeList {
 
         boolean result = false;
 
-        for (Employee employee : employeeList.getEmployeeList()) {
+        for (Employee employee : employeeList) {
             if (employee.getJob().compareTo(from) == 0) {
                 employee.setJob(to);
                 result = true;
@@ -131,6 +127,9 @@ public class EmployeeList {
 
         public EmployeeListWrapper(List<Employee> employeeList) {
             this.employeeList = employeeList;
+        }
+
+        public EmployeeListWrapper() {
         }
 
         public void writeExternal(ObjectOutput out) throws IOException {

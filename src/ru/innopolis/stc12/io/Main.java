@@ -1,13 +1,25 @@
 package ru.innopolis.stc12.io;
 
+import java.lang.reflect.Proxy;
+
 public class Main {
     public static void main(String[] args) {
-        ioTest();
+        //ioTest();
+        proxyTest();
+    }
+
+    private static void proxyTest() {
+        EmployeeList employeeList = new EmployeeList();
+        MySerialization mySerialization = (MySerialization) Proxy.newProxyInstance(employeeList.getClass().getClassLoader(),
+                employeeList.getClass().getInterfaces(), new EmployeeListProxy(employeeList));
+
+        mySerialization.readFromFile();
+        mySerialization.saveToFile();
     }
 
     private static void ioTest() {
-        //EmployeeList employeeList = new EmployeeList();   // TODO will need extends for common parent class, because duplicates code
-        MyCustomEmployeeList employeeList = new MyCustomEmployeeList();
+        EmployeeList employeeList = new EmployeeList();   // TODO will need extends for common parent class, because duplicates code
+        //MyCustomEmployeeList employeeList = new MyCustomEmployeeList();
 
         Employee employee1 = new Employee("Tom", 35, 35050.5, Job.Administrator);
         Employee employee2 = new Employee("Alex", 25, 45050.5, Job.Economist);
