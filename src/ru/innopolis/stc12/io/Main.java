@@ -15,6 +15,8 @@ public class Main {
 
         mySerialization.readFromFile();
 
+        System.out.println(employeeList);
+
         Employee employee1 = new Employee("Tom", 35, 35050.5, Job.Administrator);
         Employee employee2 = new Employee("Alex", 25, 45050.5, Job.Economist);
         Employee employee3 = new Employee("Monica", 27, 25050.5, Job.Economist);

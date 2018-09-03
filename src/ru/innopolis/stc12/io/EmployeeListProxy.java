@@ -60,10 +60,12 @@ public class EmployeeListProxy implements InvocationHandler {
                     }
                 }
             }
-        } catch (XMLStreamException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Field field = mySerialization.getClass().getDeclaredField("employeeList");
+            field.setAccessible(true);
+            field.set(mySerialization, employeeList);
+
+        } catch (XMLStreamException | FileNotFoundException | NullPointerException | NoSuchFieldException | IllegalAccessException e) {
+            System.out.println(e.getMessage());
         }
         return true;
     }
@@ -84,6 +86,9 @@ public class EmployeeListProxy implements InvocationHandler {
             eventWriter.add(startDocument);
             eventWriter.add(end);
 
+            eventWriter.add(eventFactory.createStartElement("", "", "items"));
+            eventWriter.add(end);
+
             for (Employee employee : employeeList) {
                 eventWriter.add(eventFactory.createStartElement("", "", "employee"));
                 eventWriter.add(end);
@@ -97,10 +102,13 @@ public class EmployeeListProxy implements InvocationHandler {
                 eventWriter.add(end);
             }
 
+            eventWriter.add(eventFactory.createEndElement("", "", "items"));
+            eventWriter.add(end);
+
             eventWriter.add(eventFactory.createEndDocument());
             eventWriter.close();
         } catch (NoSuchFieldException | IllegalAccessException | FileNotFoundException | XMLStreamException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
         return true;
